@@ -1,4 +1,8 @@
-# netlify.toml
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "dist/functions"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -9,4 +13,5 @@
   for = "/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
-    Cache-Control = "no-cache"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Content-Type = "text/html; charset=utf-8"

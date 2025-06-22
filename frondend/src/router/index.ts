@@ -14,7 +14,10 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      component: aboutUs
+      component: aboutUs,
+       meta: {
+        contentType: 'text/html'  // Header explícito
+      }
     },
     {
       path: '/stats',
