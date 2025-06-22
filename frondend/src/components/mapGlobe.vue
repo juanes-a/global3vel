@@ -59,7 +59,10 @@ onMounted(() => {
   console.log('Variable de entorno:', import.meta.env.VITE_API_URL)
 })
 // Configuración - IMPORTANTE: URL exacta del backend
-const API_BASE_URL = 'https://global3vel-4cb4709e6ed0.herokuapp.com'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://global3vel-4cb4709e6ed0.herokuapp.com';
+
+axios.defaults.baseURL = API_BASE_URL;
+axios.defaults.withCredentials = false;
 
 mapboxgl.accessToken = 'pk.eyJ1IjoianVhbmVzNzgiLCJhIjoiY21id2xycnhrMTFvazJscTFidGFod2JwZiJ9.2d50Rw2voOOdpAg6GtoHAA'
 
@@ -272,18 +275,29 @@ defineExpose({
 
 <style scoped>
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .main-container {
-  position: relative;
+  position: fixed;
   width: 100vw;
   height: 100vh;
 }
 
-/* Estilos del navbar (se mantienen igual) */
+/* Estilos del navbar */
 .navbar {
   position: absolute;
   top: 0;
   left: 0;
-  width: 95%;
+  width: 100%;
   padding: 1rem 2rem;
   background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(8px);
@@ -291,6 +305,7 @@ defineExpose({
   transition: all 0.3s ease;
   display: flex;
   justify-content: center;
+  margin: 0;
 }
 
 .navbar.collapsed {
@@ -309,12 +324,11 @@ defineExpose({
 
 .logo {
   color: white;
-  font-size: 2rem; /* Aumenta esto si no ves diferencia (prueba 2.5rem o 3rem) */
+  font-size: 2rem;
   font-family: 'Poppins', sans-serif;
   margin: 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
-
 
 .menu-toggle {
   background: none;
@@ -333,7 +347,13 @@ defineExpose({
   border-radius: 50%;
 }
 
-.nav-links router-link {
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* Estilos para router-link (alternativa 1) */
+.nav-links a {
   color: white;
   text-decoration: none;
   font-weight: 600;
@@ -341,6 +361,15 @@ defineExpose({
   font-family: 'Poppins', sans-serif;
   transition: all 0.3s ease;
   white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.nav-links a:hover {
+  color: #38bdf8;
+}
+
+.nav-links a.router-link-active {
+  color: #38bdf8;
 }
 
 .navbar.collapsed .nav-links {
@@ -362,24 +391,6 @@ defineExpose({
   opacity: 1;
 }
 
-.nav-links a {
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1.9rem; /* más grande */
-  font-family: 'Poppins', sans-serif;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-}
-
-.nav-links router-link:hover {
-  color: #38bdf8;
-}
-
-.nav-links router-link.router-link-active {
-  color: #38bdf8;
-}
-
 .map-container {
   position: absolute;
   top: 0;
@@ -387,6 +398,8 @@ defineExpose({
   width: 100%;
   height: 100%;
   z-index: 1;
+  margin: 0;
+  padding: 0;
 }
 
 

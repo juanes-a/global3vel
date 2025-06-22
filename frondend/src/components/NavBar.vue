@@ -72,7 +72,7 @@ const toggleMenu = () => {
 
 .logo {
   color: white;
-  font-size: 2rem; /* Aumenta esto si no ves diferencia (prueba 2.5rem o 3rem) */
+  font-size: 2rem;
   font-family: 'Poppins', sans-serif;
   margin: 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -95,7 +95,13 @@ const toggleMenu = () => {
   border-radius: 50%;
 }
 
-.nav-links router-link {
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* Estilos para router-link (alternativa 1) */
+.nav-links a {
   color: white;
   text-decoration: none;
   font-weight: 600;
@@ -103,6 +109,15 @@ const toggleMenu = () => {
   font-family: 'Poppins', sans-serif;
   transition: all 0.3s ease;
   white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.nav-links a:hover {
+  color: #38bdf8;
+}
+
+.nav-links a.router-link-active {
+  color: #38bdf8;
 }
 
 .navbar.collapsed .nav-links {
@@ -124,20 +139,4 @@ const toggleMenu = () => {
   opacity: 1;
 }
 
-.nav-links a {
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1.9rem; /* más grande */
-  font-family: 'Poppins', sans-serif;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-}
-
-.nav-links router-link:hover {
-  color: #38bdf8;
-}
-.nav-links router-link.router-link-active {
-  color: #38bdf8;
-}
 </style>
