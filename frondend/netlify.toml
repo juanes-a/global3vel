@@ -8,10 +8,10 @@
   to = "/index.html"
   status = 200
   force = true
+  conditions = {Language = ["en"]}
 
 [[headers]]
   for = "/*"
   [headers.values]
-    Access-Control-Allow-Origin = "*"
+    X-Content-Type-Options = "nosniff"
     Cache-Control = "no-cache, no-store, must-revalidate"
-    Content-Type = "text/html; charset=utf-8"
