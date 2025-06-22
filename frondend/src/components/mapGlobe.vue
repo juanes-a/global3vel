@@ -403,6 +403,119 @@ body {
 }
 
 
+/* Estilos existentes para PC (se mantienen igual) */
+.navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem 2rem;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+}
+
+.navbar.collapsed {
+  width: auto;
+  padding: 0.5rem;
+  right: 0rem;
+  left: auto;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.logo {
+  color: white;
+  font-size: 2rem;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.9rem;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos para móviles (ajuste responsive) */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.5rem 1rem;
+    justify-content: space-between; /* Aprovecha mejor el espacio */
+  }
+
+  .logo {
+    font-size: 4vw; /* Tamaño relativo al ancho de pantalla */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%;
+  }
+
+  .nav-links a {
+    font-size: 3.5vw; /* Tamaño proporcional */
+    padding: 0.3rem 0;
+  }
+
+  /* Menú hamburguesa más visible */
+  .menu-toggle {
+    padding: 0.5rem;
+  }
+  
+  .menu-toggle .dot {
+    width: 4px;
+    height: 4px;
+    background: white;
+  }
+
+  /* Menú desplegable ajustado */
+  .navbar.collapsed .nav-links {
+    right: 0.5rem;
+    padding: 0.8rem;
+    min-width: 150px;
+    gap: 0.8rem;
+  }
+
+  /* Asegura que los enlaces no se corten */
+  .navbar.collapsed .nav-links a {
+    white-space: nowrap;
+    font-size: 1rem;
+  }
+}
+
+/* Para pantallas muy pequeñas (ej: < 400px) */
+@media (max-width: 400px) {
+  .logo {
+    font-size: 1rem;
+  }
+  
+  .nav-links a {
+    font-size: 0.9rem;
+  }
+}
+
+
+
 /* Estilos del formulario emergente */
 .form-overlay {
   position: fixed;
