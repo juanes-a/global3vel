@@ -1,17 +1,8 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  functions = "dist/functions"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = true
-  conditions = {Language = ["en"]}
 
 [[headers]]
   for = "/*"
   [headers.values]
     X-Content-Type-Options = "nosniff"
-    Cache-Control = "no-cache, no-store, must-revalidate"
