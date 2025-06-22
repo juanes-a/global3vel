@@ -54,6 +54,10 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import mapboxgl from 'mapbox-gl'
 import axios from 'axios'
 
+// En tu <script setup>
+onMounted(() => {
+  console.log('Variable de entorno:', import.meta.env.VITE_API_URL)
+})
 // Configuración - IMPORTANTE: URL exacta del backend
 const API_BASE_URL = 'https://global3vel-4cb4709e6ed0.herokuapp.com'
 
