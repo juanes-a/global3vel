@@ -49,20 +49,26 @@
 
 
 <script setup lang="ts">
-
 import { ref, onMounted } from 'vue'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import mapboxgl from 'mapbox-gl'
 import axios from 'axios'
 
-// Configuración
+// Configuración - IMPORTANTE: URL exacta del backend
+const API_BASE_URL = 'https://global3vel-4cb4709e6ed0.herokuapp.com'
+
 mapboxgl.accessToken = 'pk.eyJ1IjoianVhbmVzNzgiLCJhIjoiY21id2xycnhrMTFvazJscTFidGFod2JwZiJ9.2d50Rw2voOOdpAg6GtoHAA'
 
-// Estados
+// Configuración global de Axios para CORS
+axios.defaults.baseURL = API_BASE_URL
+axios.defaults.headers.common['Accept'] = 'application/json'
+axios.defaults.headers.common['Content-Type'] = 'application/json'
+
+// Estados (permanecen igual)
 const mapContainer = ref<HTMLElement | null>(null)
 const isNavCollapsed = ref(false)
 const menuExpanded = ref(false)
-const map = ref<mapboxgl.Map | null>(null)
+const map = ref<mapboxgl.Map>({} as mapboxgl.Map)
 const showForm = ref(false)
 const formData = ref({
   username: '',
@@ -72,11 +78,22 @@ const formData = ref({
   lng: 0
 })
 
-// Funciones del menú
+interface Pin {
+  id: number
+  username: string
+  game: string
+  note?: string
+  lat: number | string
+  lng: number | string
+  created_at?: string
+  updated_at?: string
+}
+
+// Funciones del menú (permanecen igual)
 const toggleMenu = () => menuExpanded.value = !menuExpanded.value
 const closeMenu = () => menuExpanded.value = false
 
-// Funciones del formulario
+// Funciones del formulario - MODIFICADAS para manejar CORS
 const cancelForm = () => {
   showForm.value = false
   formData.value = { username: '', game: '', note: '', lat: 0, lng: 0 }
@@ -85,54 +102,93 @@ const cancelForm = () => {
 const submitPin = async () => {
   try {
     const { username, game, note, lat, lng } = formData.value
-    await axios.post('http://localhost:8000/api/pins', { username, game, note, lat, lng })
     
-    // Agregar el nuevo marcador al mapa
-    const marker = new mapboxgl.Marker()
-      .setLngLat([lng, lat])
-      .addTo(map.value!)
-    
-    // Configurar popup para el nuevo marcador
-    marker.setPopup(
-      new mapboxgl.Popup({ offset: 25 })
-        .setHTML(`
-          <div class="popup-content">
-            <h3>${game}</h3>
-            <p>${note || 'Sin nota'}</p>
-            <small>Publicado por: ${username}</small>
-          </div>
-        `)
-    )
-    
-    // Agregar evento específico al marcador
-    marker.getElement().addEventListener('click', (e) => {
-      e.stopPropagation()
-      marker.togglePopup()
+    // Enviar pin con headers explícitos
+    const response = await axios.post('/api/pins', { 
+      username, 
+      game, 
+      note, 
+      lat: Number(lat),
+      lng: Number(lng)
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
     })
+
+    // Agregar el nuevo marcador al mapa
+    if (map.value && response.data) {
+      const newPin = response.data
+      createMarkerWithPopup({
+        id: newPin.id,
+        username: newPin.username,
+        game: newPin.game,
+        note: newPin.note,
+        lat: Number(newPin.lat),
+        lng: Number(newPin.lng)
+      })
+    }
     
     cancelForm()
   } catch (error) {
-    console.error(error)
+    console.error('Error al enviar pin:', error)
+    // Manejo de errores mejorado
+    if (axios.isAxiosError(error)) {
+      console.error('Detalles del error:', {
+        message: error.message,
+        code: error.code,
+        response: error.response?.data
+      })
+    }
+  }
+}
+
+const createMarkerWithPopup = (pin: Pin) => {
+  if (!map.value) return
+  
+  // Convertir coordenadas a números si son strings
+  const lat = typeof pin.lat === 'string' ? parseFloat(pin.lat) : pin.lat
+  const lng = typeof pin.lng === 'string' ? parseFloat(pin.lng) : pin.lng
+
+  const marker = new mapboxgl.Marker()
+    .setLngLat([lng, lat])
+    .addTo(map.value)
+  
+  marker.setPopup(
+    new mapboxgl.Popup({ offset: 25 })
+      .setHTML(`
+        <div class="popup-content">
+          <h3>${pin.game}</h3>
+          <p>${pin.note || 'Sin nota'}</p>
+          <small>Publicado por: ${pin.username}</small>
+          ${pin.created_at ? `<small>Creado: ${new Date(pin.created_at).toLocaleString()}</small>` : ''}
+        </div>
+      `)
+  )
+  
+  const markerElement = marker.getElement()
+  if (markerElement) {
+    markerElement.addEventListener('click', (e) => {
+      e.stopPropagation()
+      marker.togglePopup()
+    })
   }
 }
 
 onMounted(async () => {
   if (!mapContainer.value) return
 
-  // Inicializar mapa
+  // Inicializar mapa (igual)
   map.value = new mapboxgl.Map({
     container: mapContainer.value,
-    style: 'mapbox://styles/mapbox/streets-v11',
+    style: 'mapbox://styles/mapbox/streets-v12',
     center: [-74.5, 40],
     zoom: 1,
-    projection: 'globe'
+    projection: 'globe' as any
+  }) as unknown as mapboxgl.Map
 
-
-  })
-
-
-
-  // Configuración visual
+  // Configuración visual (igual)
   map.value.on('style.load', () => {
     map.value?.setFog({
       color: 'rgb(186, 210, 235)',
@@ -140,70 +196,73 @@ onMounted(async () => {
       'horizon-blend': 0.02,
       'space-color': 'rgb(11, 11, 25)',
       'star-intensity': 0.6
-    })
+    } as any)
   })
 
-  // Controlador de zoom
+  // Controlador de zoom (igual)
   map.value.on('zoom', () => {
     if (!map.value) return
-    const currentZoom = map.value.getZoom()
-    isNavCollapsed.value = currentZoom > 1.2
+    isNavCollapsed.value = map.value.getZoom() > 1.2
   })
 
-  // Cargar marcadores existentes
+  // Cargar marcadores existentes - MODIFICADO para mejor manejo de errores
   try {
-    const response = await axios.get('http://localhost:8000/api/pins')
-    response.data.forEach((pin: any) => {
-      const marker = new mapboxgl.Marker()
-        .setLngLat([pin.lng, pin.lat])
-        .addTo(map.value!)
-      
-      // Configurar popup para el marcador
-      marker.setPopup(
-        new mapboxgl.Popup({ offset: 25 })
-          .setHTML(`
-            <div class="popup-content">
-              <h3>${pin.game}</h3>
-              <p>${pin.note || 'Sin nota'}</p>
-              <small>Publicado por: ${pin.username}</small>
-            </div>
-          `)
-      )
-      
-      // Agregar evento al marcador
-      marker.getElement().addEventListener('click', (e) => {
-        e.stopPropagation()
-        marker.togglePopup()
+    const response = await axios.get<Pin[]>('/api/pins', {
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    
+    response.data.forEach(pin => {
+      createMarkerWithPopup({
+        ...pin,
+        lat: Number(pin.lat),
+        lng: Number(pin.lng)
       })
     })
   } catch (error) {
     console.error('Error al cargar pins:', error)
+    if (axios.isAxiosError(error)) {
+      console.error('Detalles del error CORS:', {
+        config: error.config,
+        response: error.response
+      })
+    }
   }
 
-  // Manejo de clicks en el mapa (solo para tierra)
+  // Manejo de clicks en el mapa (igual)
   map.value.on('click', async (e) => {
     if (!map.value) return
     
-    // Verificar si el click fue en un marcador
     const target = e.originalEvent.target as HTMLElement
-    if (target.closest('.mapboxgl-marker')) {
-      return // Es un click en marcador, no hacer nada
-    }
+    if (target.closest('.mapboxgl-marker')) return
     
-    // Verificar si es tierra
     const features = map.value.queryRenderedFeatures(e.point)
     const isLand = features.some(feat => 
       !(feat.layer?.id?.includes('water') || 
-       (feat.layer?.type === 'fill' && feat.sourceLayer === 'water'))
+      (feat.layer?.type === 'fill' && feat.sourceLayer === 'water'))
     )
 
     if (!isLand) return
 
-    // Mostrar formulario solo para clicks en tierra
     formData.value.lat = e.lngLat.lat
     formData.value.lng = e.lngLat.lng
     showForm.value = true
   })
+})
+
+
+// Exponer las variables que necesita el template
+defineExpose({
+  mapContainer,
+  showForm,
+  formData,
+  isNavCollapsed,
+  menuExpanded,
+  toggleMenu,
+  closeMenu,
+  submitPin,
+  cancelForm
 })
 </script>
 

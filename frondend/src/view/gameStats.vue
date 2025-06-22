@@ -83,7 +83,12 @@ async function reverseGeocode(lat: number | undefined, lng: number | undefined) 
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/pins')
+    const response = await axios.get('https://global3vel-4cb4709e6ed0.herokuapp.com/api/pins', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
     const loadedPins = response.data
 
     for (const pin of loadedPins) {
@@ -126,9 +131,10 @@ function particleStyle(i: number) {
   return {
     width: `${size}px`,
     height: `${size}px`,
-    left: `${Math.random() * 100}%`,
+    left: `${i * 10}px`,
     top: `${Math.random() * 100}%`,
     backgroundColor: color,
+    animationDelay: `${i * 0.1}s`,
     animation: `move${Math.floor(Math.random() * 3) + 1} ${Math.random() * 10 + 10}s linear infinite`
   }
 }

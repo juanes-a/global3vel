@@ -1,42 +1,41 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 
-import { useRouter } from 'vue-router';
-const router = useRouter();
-
-import { ref} from 'vue'
-import 'mapbox-gl/dist/mapbox-gl.css'
-
-
-// Props
+// Definir las props
 interface NavbarProps {
   isNavCollapsed: boolean
 }
 
 const props = defineProps<NavbarProps>()
 
-// Estados
+// Variables reactivas
 const menuExpanded = ref(false)
 
-// Funciones del menú
-const toggleMenu = () => menuExpanded.value = !menuExpanded.value
-const closeMenu = () => menuExpanded.value = false
+// Métodos
+const closeMenu = () => {
+  menuExpanded.value = false
+}
+
+const toggleMenu = () => {
+  menuExpanded.value = !menuExpanded.value
+}
+
+// Remover la línea del router si no se usa:
+// const router = useRouter(); // ELIMINAR ESTA LÍNEA
 </script>
 
 <template>
-  <!-- Barra de navegación dinámica -->
-  <nav :class="['navbar', { 'collapsed': isNavCollapsed }]">
-    <div class="nav-content">
-      <h1 class="logo" v-show="!isNavCollapsed">GlobaL3VEL</h1>
-      <button class="menu-toggle" @click="toggleMenu" v-show="isNavCollapsed">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </button>
-      <div class="nav-links" :class="{ 'expanded': menuExpanded }" v-show="!isNavCollapsed || menuExpanded">
-        <a href="/" @click="closeMenu">Home</a>
-        <a href="/about" @click="closeMenu">About Us</a>
-        <a href="/stats" @click="closeMenu">Game Stats</a>
-      </div>
+  <nav class="navbar">
+    <!-- Botón de menú hamburguesa -->
+    <button @click="toggleMenu" class="menu-toggle">
+      ☰
+    </button>
+    
+    <!-- Enlaces de navegación -->
+    <div class="nav-links" :class="{ 'expanded': menuExpanded }" v-show="!props.isNavCollapsed || menuExpanded">
+      <a href="/" @click="closeMenu">Home</a>
+      <a href="/about" @click="closeMenu">About Us</a>
+      <a href="/stats" @click="closeMenu">Game Stats</a>
     </div>
   </nav>
 </template>

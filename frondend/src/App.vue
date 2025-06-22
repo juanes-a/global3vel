@@ -8,6 +8,6 @@ const showNavBar = computed(() => route.name !== 'home')
 </script>
 
 <template>
-  <NavBar v-if="showNavBar" />
+  <NavBar v-if="showNavBar" :isNavCollapsed="false"/>
   <router-view />
 </template>

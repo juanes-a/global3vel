@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../components/mapGlobe.vue' 
+import aboutUs from '../view/aboutUs.vue' // Importa tu componente de "Sobre nosotros"
+import gameStats from '../view/gameStats.vue' // Importa tu componente de estadísticas del juego
 
 
 const routes = [
@@ -11,12 +13,12 @@ const routes = [
   {
     path: '/about',
     name: 'about',
-    component: () => import('../view/aboutUs.vue') // Lazy loading
+    component: aboutUs
   },
   {
     path: '/stats',
     name: 'stats',
-    component: () => import('../view/gameStats.vue') // Lazy loading
+    component: gameStats
   }
 ]
 
