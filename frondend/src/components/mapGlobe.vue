@@ -10,9 +10,9 @@
           <span class="dot"></span>
         </button>
         <div class="nav-links" :class="{ 'expanded': menuExpanded }" v-show="!isNavCollapsed || menuExpanded">
-          <a href="/" @click="closeMenu">Home</a>
-          <a href="/about" @click="closeMenu">About Us</a>
-          <a href="/stats" @click="closeMenu">Game Stats </a>
+          <router-link to="/" @click="closeMenu">Home</router-link>
+          <router-link to="/about" @click="closeMenu">About Us</router-link>
+          <router-link to="/stats" @click="closeMenu">Game Stats</router-link>
         </div>
       </div>
     </nav>
@@ -333,9 +333,14 @@ defineExpose({
   border-radius: 50%;
 }
 
-.nav-links {
-  display: flex;
-  gap: 2.5rem;
+.nav-links router-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.9rem;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .navbar.collapsed .nav-links {
@@ -367,7 +372,11 @@ defineExpose({
   white-space: nowrap;
 }
 
-.nav-links a:hover {
+.nav-links router-link:hover {
+  color: #38bdf8;
+}
+
+.nav-links router-link.router-link-active {
   color: #38bdf8;
 }
 
